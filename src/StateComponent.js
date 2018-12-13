@@ -16,6 +16,9 @@ export default class StateComponent extends Container {
         descricaoHabilidade: "",
         nivelEspaco: 1,
         quantiaEspacosMagia: 1,
+        nomeMagia: "",
+        descricaoMagia: "",
+        modalMagia: false,
         modalHabilidade: false,
         modalEspacosMagia: false
     };
@@ -34,6 +37,8 @@ export default class StateComponent extends Container {
     handleDescricaoHabilidade = (e) => { this.setState({ descricaoHabilidade: e.target.value })}
     handleNivelEspaco = (e) => { this.setState({nivelEspaco: e.target.value})}
     handleQuantiaEspacosMagia = (e) => { this.setState({quantiaEspacosMagia: e.target.value})}
+    handleNomeMagia = (e) => { this.setState({ nomeMagia: e.target.value })} 
+    handleDescricaoMagia = (e) => { this.setState({ descricaoMagia: e.target.value })}
     
     setVidaAtual = (indexPersonagem) => {
         let lista = this.state.listaPersonagens;
@@ -57,11 +62,28 @@ export default class StateComponent extends Container {
         })
     }
 
+    toggleModalMagia = () => {
+        this.setState({
+            modalMagia: !this.state.modalMagia
+        })
+    }
+
     togglePopoverHabilidade = (indexPersonagem, indexHabilidade) => {
         let lista = this.state.listaPersonagens;
         if (lista[indexPersonagem].listaHabilidades[indexHabilidade].descricaoHabilidade !== "") {
             let popover = lista[indexPersonagem].listaHabilidades[indexHabilidade].popoverOpen;
             lista[indexPersonagem].listaHabilidades[indexHabilidade].popoverOpen = !popover;
+            this.setState({
+                listaPersonagens: lista
+            })
+        }
+    }
+
+    togglePopoverMagia = (indexPersonagem, indexMagia) => {
+        let lista = this.state.listaPersonagens;
+        if (lista[indexPersonagem].listaMagias[indexMagia].descricaoMagia !== "") {
+            let popover = lista[indexPersonagem].listaMagias[indexMagia].popoverOpen;
+            lista[indexPersonagem].listaMagias[indexMagia].popoverOpen = !popover;
             this.setState({
                 listaPersonagens: lista
             })
@@ -89,6 +111,17 @@ export default class StateComponent extends Container {
         if (lista[indexPersonagem].espacosDeMagia[indexEspaco].espacosRestantes !== 0) {
             lista[indexPersonagem].espacosDeMagia[indexEspaco].espacosRestantes -= 1;
         }
+        this.setState({
+            listaPersonagens: lista
+        })
+    }
+
+    prepararMagia = (indexPersonagem, indexMagia) => {
+        let magiaParaPreparar = this.state.listaPersonagens[indexPersonagem].listaMagias[indexMagia];
+        magiaParaPreparar.preparada = !magiaParaPreparar.preparada;
+        let lista = this.state.listaPersonagens;
+        lista[indexPersonagem].listaMagias[indexMagia] = magiaParaPreparar;
+
         this.setState({
             listaPersonagens: lista
         })
@@ -136,13 +169,22 @@ export default class StateComponent extends Container {
 
     deletarHabilidade = (indexPersonagem, indexHabilidade) => {
         let lista = this.state.listaPersonagens;
-        let listaAtualizada = lista[indexPersonagem].listaHabilidades.filter((habilidade, i) => i !== indexHabilidade);
-        lista[indexPersonagem].listaHabilidades = listaAtualizada;
+        let listaHabilidadesAtualizada = lista[indexPersonagem].listaHabilidades.filter((habilidade, i) => i !== indexHabilidade);
+        lista[indexPersonagem].listaHabilidades = listaHabilidadesAtualizada;
         this.setState({
             listaPersonagens: lista
         })
     }
 
+    deletarMagia = (indexPersonagem, indexMagia) => {
+        let lista = this.state.listaPersonagens;
+        let listaMagiasAtualizada = lista[indexPersonagem].listaMagias.filter((magia, i) => i !== indexMagia);
+        lista[indexPersonagem].listaMagias = listaMagiasAtualizada;
+        this.setState({
+            listaPersonagens: lista
+        })
+    }
+    
     adicionarHabilidade = (indexPersonagem) => {
         let habilidade = {
             nomeHabilidade: this.state.nomeHabilidade,
@@ -163,6 +205,25 @@ export default class StateComponent extends Container {
             descanso: "Curto",
             quantiaUsosHabilidade: '',
             descricaoHabilidade: ""
+        })
+    }
+
+    adicionarMagia = (indexPersonagem) => {
+        let magia = {
+            nomeMagia: this.state.nomeMagia,
+            descricaoMagia: this.state.descricaoMagia,
+            preparada: false,
+            popoverOpen: false
+        }
+
+        let lista = this.state.listaPersonagens;
+        lista[indexPersonagem].listaMagias.push(magia);
+
+        this.setState({
+            listaPersonagens: lista,
+            nomeMagia: "",
+            descricaoMagia: "",
+            modalMagia: false
         })
     }
 
@@ -232,19 +293,36 @@ export default class StateComponent extends Container {
             };
         }
 
-        let lista = this.state.listaPersonagens;
-        lista.push(char);
-
-        this.setState({
-            listaPersonagens: lista,
-            nome: "",
-            nivel: '',
-            vidaMax: '',
-            raca: "",
-            classe: "",
-            dadoVida: "",
-            linkImg: ""
+        fetch('http://localhost:3009/', {
+            method: 'POST',
+            body: JSON.stringify(char),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then((response) => {
+            if(response.status == 200) {
+                let lista = this.state.listaPersonagens;
+                lista.push(char);
+        
+                this.setState({
+                    listaPersonagens: lista,
+                    nome: "",
+                    nivel: '',
+                    vidaMax: '',
+                    raca: "",
+                    classe: "",
+                    dadoVida: "",
+                    linkImg: ""
+                })
+            }
         })
+    }
+    
+    inicializarListaPersonagens = (lista) => {
+        this.setState({
+            listaPersonagens: lista
+        })
+        console.log(this.state.listaPersonagens)
     }
 }
 

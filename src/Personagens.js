@@ -4,14 +4,35 @@ import { Subscribe } from 'unstated';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Link } from "react-router-dom";
 import { FaUserCog } from "react-icons/fa";
-import { Container, Col, Row, Card, CardImg, CardBody, CardTitle, CardSubtitle, Progress, UncontrolledCollapse, Input, InputGroup, InputGroupAddon, Button } from 'reactstrap';
+import { Container, Col, Row, Card, CardImg, CardBody, CardTitle, CardSubtitle, 
+    Progress, UncontrolledCollapse, Input, InputGroup, InputGroupAddon, Button } from 'reactstrap';
+
 
 class Personagens extends React.Component {
 
+    constructor() {
+        super();
+        this.listaPersonagens = [];
+    }
+
+    componentDidMount = () => {
+        fetch('http://localhost:3009/personagens', {
+            method: 'GET',
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then((response) => {
+            return response.json();
+        }).then((dados) => {
+            this.listaPersonagens = dados;
+        })
+    }
+  
     render = () => (
         <Subscribe to={[StateComponent]}>
             {sc => (
                 <Container>
+                    {() => sc.inicializarListaPersonagens(this.listaPersonagens)}
                     <h1>Personagens</h1>
                     <Row>
                     {sc.state.listaPersonagens.map((char, i) => 

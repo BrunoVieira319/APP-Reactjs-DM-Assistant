@@ -52,6 +52,7 @@ class Habilidades extends React.Component {
                                         <Button color="info" onClick={() => sc.restaurarUsos(this.indexPersonagem, i)}> <FaUndo style={this.styleIcons}/> </Button>{' '}
                                         <Button color="danger" onClick={() => sc.deletarHabilidade(this.indexPersonagem, i)}> <FaTrashAlt style={this.styleIcons}/> </Button>
                                     </Col>
+                                    
                                     <Popover 
                                         placement="auto" 
                                         isOpen={habilidade.popoverOpen} 
@@ -66,6 +67,7 @@ class Habilidades extends React.Component {
                         <ListGroupItem tag="button" className="adicionar-habilidade" onClick={sc.toggleModalHabilidade}>
                             <MdAddCircle style={{width: '32px', height: '32px', marginLeft: '6px', color: '#080'}}/> Adicionar Habilidade
                         </ListGroupItem>
+                        <div style={{height: "20px"}} />
                     </ListGroup>
 
 
