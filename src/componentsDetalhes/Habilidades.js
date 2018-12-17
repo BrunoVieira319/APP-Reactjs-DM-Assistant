@@ -1,7 +1,9 @@
 import React from 'react';
 import { Subscribe } from 'unstated';
 import StateComponent from '../StateComponent';
-import { Row, Col, Button, ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText, Modal, ModalBody, ModalHeader, ModalFooter, Input, InputGroup, InputGroupAddon, Popover, PopoverBody} from 'reactstrap';
+import { Row, Col, Button, ListGroup, ListGroupItem, ListGroupItemHeading, 
+    ListGroupItemText, Modal, ModalBody, ModalHeader, ModalFooter, Input, 
+    InputGroup, InputGroupAddon, Popover, PopoverBody} from 'reactstrap';
 import { MdAddCircle } from 'react-icons/md';
 import { FaShieldAlt as Shield, FaUndo, FaDiceD20, FaTrashAlt } from 'react-icons/fa';
 
@@ -20,9 +22,13 @@ class Habilidades extends React.Component {
         let listaShields = [];
         for(let i = 0; i < quantiaMaximaUsos; i++) {
             if (usosRestantes > i) {
-                listaShields.push(<Shield key={i} style={{width: '34px', height: '34px', marginLeft: '6px', color: '#3bc8e0'}}/>)
+                listaShields.push(
+                    <Shield key={i} style={{width: '34px', height: '34px', marginLeft: '6px', color: '#3bc8e0'}}/>
+                )
             } else {
-                listaShields.push(<Shield key={i} style={{width: '34px', height: '34px', marginLeft: '6px', color: '#DDD'}}/>)
+                listaShields.push(
+                    <Shield key={i} style={{width: '34px', height: '34px', marginLeft: '6px', color: '#DDD'}}/>
+                )
             }
         }
         return listaShields;

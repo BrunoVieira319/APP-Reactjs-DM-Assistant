@@ -6,7 +6,7 @@ export default class StateComponent extends Container {
         nome: "",
         nivel: '',
         vidaMax: '',
-        vidaAtual: '',
+        valorVida: '',
         raca: "",
         classe: "",
         linkImg: "",
@@ -20,7 +20,8 @@ export default class StateComponent extends Container {
         descricaoMagia: "",
         modalMagia: false,
         modalHabilidade: false,
-        modalEspacosMagia: false
+        modalEspacosMagia: false,
+        modalRemover: false
     };
 
     handleNome = (e) => { this.setState({ nome: e.target.value })}
@@ -30,7 +31,7 @@ export default class StateComponent extends Container {
     handleRaca = (e) => { this.setState({ raca: e.target.value })}
     handleClasse = (e) => { this.setState({ classe: e.target.value })}
     handleLink = (e) => { this.setState({ linkImg: e.target.value })}
-    handleVidaAtual = (e) => { this.setState({ vidaAtual: e.target.value })} 
+    handleValorVida = (e) => { this.setState({ valorVida: e.target.value })} 
     handleNomeHabilidade = (e) => { this.setState({ nomeHabilidade: e.target.value })} 
     handleDescanso = (e) => { this.setState({ descanso: e.target.value })} 
     handleQuantiaUsosHabilidade = (e) => { this.setState({ quantiaUsosHabilidade: e.target.value })} 
@@ -39,16 +40,6 @@ export default class StateComponent extends Container {
     handleQuantiaEspacosMagia = (e) => { this.setState({quantiaEspacosMagia: e.target.value})}
     handleNomeMagia = (e) => { this.setState({ nomeMagia: e.target.value })} 
     handleDescricaoMagia = (e) => { this.setState({ descricaoMagia: e.target.value })}
-    
-    setVidaAtual = (indexPersonagem) => {
-        let lista = this.state.listaPersonagens;
-        lista[indexPersonagem].vidaAtual = Number.parseInt(this.state.vidaAtual);
-
-        this.setState({
-            listaPersonagens: lista,
-            vidaAtual: ''
-        })
-    }
 
     toggleModalHabilidade = () => {
         this.setState({
@@ -68,9 +59,16 @@ export default class StateComponent extends Container {
         })
     }
 
+    toggleModalRemover = () => {
+        this.setState({
+            modalRemover: !this.state.modalRemover
+        })
+    }
+
     togglePopoverHabilidade = (indexPersonagem, indexHabilidade) => {
         let lista = this.state.listaPersonagens;
-        if (lista[indexPersonagem].listaHabilidades[indexHabilidade].descricaoHabilidade !== "") {
+        let descricaoHabilidade = lista[indexPersonagem].listaHabilidades[indexHabilidade].descricaoHabilidade;
+        if (descricaoHabilidade !== "") {
             let popover = lista[indexPersonagem].listaHabilidades[indexHabilidade].popoverOpen;
             lista[indexPersonagem].listaHabilidades[indexHabilidade].popoverOpen = !popover;
             this.setState({
@@ -90,30 +88,120 @@ export default class StateComponent extends Container {
         }
     }
 
+    resetarState = () => {
+        this.setState({
+            nome: "",
+            nivel: '',
+            vidaMax: '',
+            valorVida: "",
+            raca: "",
+            classe: "",
+            linkImg: "",
+            nomeHabilidade: "",
+            descanso: "Curto",
+            quantiaUsosHabilidade: '',
+            descricaoHabilidade: "",
+            nivelEspaco: 1,
+            quantiaEspacosMagia: 1,
+            nomeMagia: "",
+            descricaoMagia: ""
+        })
+    }
+
+    setVidaAtual = (indexPersonagem) => {
+        let lista = this.state.listaPersonagens;
+        let caracterComparativo = this.state.valorVida.charAt(0);
+        let vidaAtual = lista[indexPersonagem].vidaAtual;
+        let vidaAtualizada = 0;
+        
+        if (caracterComparativo === "+") {
+            vidaAtualizada = parseInt(vidaAtual) + parseInt(this.state.valorVida);
+        } else if (caracterComparativo === "/") {
+
+        } else {
+            vidaAtualizada = parseInt(vidaAtual) - parseInt(this.state.valorVida);
+        }
+
+        vidaAtualizada = Math.max(vidaAtualizada, 0)
+        vidaAtualizada = Math.min(vidaAtualizada, lista[indexPersonagem].vidaMax)
+
+        lista[indexPersonagem].vidaAtual = vidaAtualizada;
+
+        this.atualizarPersonagem(lista[indexPersonagem]).then(() => {
+            this.setState({
+                listaPersonagens: lista,
+                valorVida: ""
+            })
+        })
+    }
+
+    iniciarUpdate = (indexPersonagem) => {
+        let personagem = this.state.listaPersonagens[indexPersonagem]
+        this.setState({
+            nome: personagem.nome,
+            nivel: personagem.nivel,
+            vidaMax: personagem.vidaMax,
+            linkImg: personagem.linkImg
+        })
+    }
+
+    editarPersonagem = (i) => {
+        let lista = this.state.listaPersonagens;
+        lista[i].nome = this.state.nome;
+        lista[i].vidaMax = this.state.vidaMax;
+        lista[i].nivel = this.state.nivel;
+        lista[i].linkImg = this.state.linkImg;
+
+        this.atualizarPersonagem(lista[i]).then(() => {
+            this.setState({
+                listaPersonagens: lista,
+                nome: "",
+                nivel: '',
+                vidaMax: '',
+                linkImg: ""
+            })
+        })
+    }
+
     usarDadoVida = (indexPersonagem) => {
         let lista = this.state.listaPersonagens;
-        lista[indexPersonagem].quantiaDadosVida -= 1; 
-        this.setState({
-            listaPersonagens: lista
-        })
+        let quantiaDadosVida = lista[indexPersonagem].quantiaDadosVida;
+        if (quantiaDadosVida > 0) {
+            lista[indexPersonagem].quantiaDadosVida -= 1;
+            this.atualizarPersonagem(lista[indexPersonagem]).then(() => {
+                this.setState({
+                    listaPersonagens: lista
+                })
+            })
+        }
     }
 
     usarHabilidade = (indexPersonagem, indexHabilidade) => {
         let lista = this.state.listaPersonagens;
-        lista[indexPersonagem].listaHabilidades[indexHabilidade].usosRestantes -= 1;
-        this.setState({
-            listaPersonagens: lista
-        })
+        let usosRestantes = lista[indexPersonagem].listaHabilidades[indexHabilidade].usosRestantes;
+        
+        if (usosRestantes > 0) {
+            lista[indexPersonagem].listaHabilidades[indexHabilidade].usosRestantes -= 1;
+            this.atualizarPersonagem(lista[indexPersonagem]).then(() => {
+                this.setState({
+                listaPersonagens: lista
+                })
+            })
+        }
     }
 
     conjurarMagia = (indexPersonagem, indexEspaco) => {
         let lista = this.state.listaPersonagens;
-        if (lista[indexPersonagem].espacosDeMagia[indexEspaco].espacosRestantes !== 0) {
+        let espacosRestantes = lista[indexPersonagem].espacosDeMagia[indexEspaco].espacosRestantes;
+        if (espacosRestantes > 0) {
             lista[indexPersonagem].espacosDeMagia[indexEspaco].espacosRestantes -= 1;
+
+            this.atualizarPersonagem(lista[indexPersonagem]).then(() => {
+                this.setState({
+                listaPersonagens: lista
+                })
+            })
         }
-        this.setState({
-            listaPersonagens: lista
-        })
     }
 
     prepararMagia = (indexPersonagem, indexMagia) => {
@@ -132,16 +220,22 @@ export default class StateComponent extends Container {
         let habilidade = lista[indexPersonagem].listaHabilidades[indexHabilidade];
         habilidade.usosRestantes = habilidade.quantiaUsosHabilidade;
         lista[indexPersonagem].listaHabilidades[indexHabilidade] = habilidade;
-        this.setState({
+
+        this.atualizarPersonagem(lista[indexPersonagem]).then(() => {
+            this.setState({
             listaPersonagens: lista
+            })
         })
     }
 
     restaurarDadosVida = (indexPersonagem) => {
         let lista = this.state.listaPersonagens;
-        lista[indexPersonagem].quantiaDadosVida = lista[indexPersonagem].nivel; 
-        this.setState({
-            listaPersonagens: lista
+        lista[indexPersonagem].quantiaDadosVida = lista[indexPersonagem].nivel;
+
+        this.atualizarPersonagem(lista[indexPersonagem]).then(() => {
+            this.setState({
+                listaPersonagens: lista,
+            })
         })
     }
 
@@ -150,10 +244,13 @@ export default class StateComponent extends Container {
         lista[indexPersonagem].espacosDeMagia.forEach(espaco => {
             if (espaco.nivel === nivelEspaco && espaco.espacosRestantes < espaco.quantiaEspacos) {
                 espaco.espacosRestantes += 1;
+
+                this.atualizarPersonagem(lista[indexPersonagem]).then(() => {
+                    this.setState({
+                        listaPersonagens: lista,
+                    })
+                })
             }
-        })
-        this.setState({
-            listaPersonagens: lista
         })
     }
 
@@ -162,8 +259,24 @@ export default class StateComponent extends Container {
         lista[indexPersonagem].espacosDeMagia.forEach(espaco => {
             espaco.espacosRestantes = espaco.quantiaEspacos;
         })
-        this.setState({
-            listaPersonagens: lista
+
+        this.atualizarPersonagem(lista[indexPersonagem]).then(() => {
+            this.setState({
+                listaPersonagens: lista,
+            })
+        })
+    }
+
+    removerPersonagem = (indexPersonagem) => {
+        let personagem = this.state.listaPersonagens[indexPersonagem]
+        fetch('http://localhost:3009/personagem', {
+            method: "DELETE",
+            body: JSON.stringify(personagem),
+            headers: { "Content-Type": "application/json" }
+        }).then(response => {
+            if (response.status === 200) {
+                this.toggleModalRemover();
+            }
         })
     }
 
@@ -171,8 +284,11 @@ export default class StateComponent extends Container {
         let lista = this.state.listaPersonagens;
         let listaHabilidadesAtualizada = lista[indexPersonagem].listaHabilidades.filter((habilidade, i) => i !== indexHabilidade);
         lista[indexPersonagem].listaHabilidades = listaHabilidadesAtualizada;
-        this.setState({
-            listaPersonagens: lista
+
+        this.atualizarPersonagem(lista[indexPersonagem]).then(() => {
+            this.setState({
+                listaPersonagens: lista,
+            })
         })
     }
 
@@ -180,8 +296,11 @@ export default class StateComponent extends Container {
         let lista = this.state.listaPersonagens;
         let listaMagiasAtualizada = lista[indexPersonagem].listaMagias.filter((magia, i) => i !== indexMagia);
         lista[indexPersonagem].listaMagias = listaMagiasAtualizada;
-        this.setState({
-            listaPersonagens: lista
+
+        this.atualizarPersonagem(lista[indexPersonagem]).then(() => {
+            this.setState({
+                listaPersonagens: lista,
+            })
         })
     }
     
@@ -198,13 +317,15 @@ export default class StateComponent extends Container {
         let lista = this.state.listaPersonagens;
         lista[indexPersonagem].listaHabilidades.push(habilidade);
 
-        this.setState({
-            listaPersonagens: lista,
-            modalHabilidade: false,
-            nomeHabilidade: "",
-            descanso: "Curto",
-            quantiaUsosHabilidade: '',
-            descricaoHabilidade: ""
+        this.atualizarPersonagem(lista[indexPersonagem]).then(() => {
+            this.setState({
+                listaPersonagens: lista,
+                modalHabilidade: false,
+                nomeHabilidade: "",
+                descanso: "Curto",
+                quantiaUsosHabilidade: '',
+                descricaoHabilidade: ""
+            })
         })
     }
 
@@ -219,11 +340,13 @@ export default class StateComponent extends Container {
         let lista = this.state.listaPersonagens;
         lista[indexPersonagem].listaMagias.push(magia);
 
-        this.setState({
-            listaPersonagens: lista,
-            nomeMagia: "",
-            descricaoMagia: "",
-            modalMagia: false
+        this.atualizarPersonagem(lista[indexPersonagem]).then(() => {
+            this.setState({
+                listaPersonagens: lista,
+                nomeMagia: "",
+                descricaoMagia: "",
+                modalMagia: false
+            })
         })
     }
 
@@ -244,63 +367,38 @@ export default class StateComponent extends Container {
         listaEspacos.sort((a, b) => a.nivel - b.nivel);
         lista[indexPersonagem].espacosDeMagia = listaEspacos;
 
-        this.setState({
-            listaPersonagens: lista,
-            modalEspacosMagia: false,
-            nivelEspaco: 1,
-            quantiaEspacosMagia: 1
+        this.atualizarPersonagem(lista[indexPersonagem]).then(() => {
+            this.setState({
+                listaPersonagens: lista,
+                modalEspacosMagia: false,
+                nivelEspaco: 1,
+                quantiaEspacosMagia: 1
+            })
         })
     }
 
     adicionarPersonagem = () => {
-        let char = {};
-        if (this.state.nome === "") {
-            char = {
-                nome: "Driytjan",
-                nivel: 3,
-                vidaMax: 10,
-                vidaAtual: 10,
-                raca: "Humano",
-                classe: "Clérigo",
-                quantiaDadosVida: 3,
-                listaHabilidades: [
-                    {
-                        nomeHabilidade: "Canalizar Divindade",
-                        quantiaUsosHabilidade: 2,
-                        usosRestantes: 2,
-                        descanso: "Curto",
-                        descricaoHabilidade: "Gastando 1 Canalizar Divindade todos os mortos-vivos a 9m que possam te ver e ouvir devem passar em resistência de Sabedoria ou serem Afastados por 1 minuto ou até sofrerem dano. Uma criatura Afastada deve se mover o mais longe possível do clérigo, não pode se mover para menos de 9m dele e não pode fazer Reações. Suas únicas ações permitidas são Corrida e tentar se livrar de algo que o impeça de fugir. Caso não tenha para onde fugir a criatura pode usar a ação Esquiva.",
-                        popoverOpen: false
-                    }
-                ],
-                listaMagias: [],
-                espacosDeMagia: [],
-                linkImg: "https://vignette.wikia.nocookie.net/quiz-rpg-the-world-of-mystic-wiz/images/7/79/Asward_%28Novice_Assassin%29_transparent.png/revision/latest?cb=20140911025632",
-            };
-        } else {
-            char = {
-                nome: this.state.nome,
-                nivel: this.state.nivel,
-                vidaMax: this.state.vidaMax,
-                vidaAtual: this.state.vidaMax,
-                raca: this.state.raca,
-                classe: this.state.classe,
-                quantiaDadosVida: this.state.nivel,
-                linkImg: this.state.linkImg,
-                listaHabilidades: [],
-                listaMagias: [],
-                espacosDeMagia: [],
-            };
-        }
+        let char = {
+            nome: this.state.nome,
+            nivel: this.state.nivel,
+            vidaMax: this.state.vidaMax,
+            vidaAtual: this.state.vidaMax,
+            pvsTemporarios: 0,
+            raca: this.state.raca,
+            classe: this.state.classe,
+            quantiaDadosVida: this.state.nivel,
+            linkImg: this.state.linkImg,
+            listaHabilidades: [],
+            listaMagias: [],
+            espacosDeMagia: [],
+        };
 
-        fetch('http://localhost:3009/', {
+        fetch('http://localhost:3009/personagem', {
             method: 'POST',
             body: JSON.stringify(char),
-            headers: {
-                "Content-Type": "application/json"
-            }
+            headers: { "Content-Type": "application/json" }
         }).then((response) => {
-            if(response.status == 200) {
+            if(response.status === 200) {
                 let lista = this.state.listaPersonagens;
                 lista.push(char);
         
@@ -317,12 +415,13 @@ export default class StateComponent extends Container {
             }
         })
     }
-    
-    inicializarListaPersonagens = (lista) => {
-        this.setState({
-            listaPersonagens: lista
+
+    atualizarPersonagem = (personagem) => {
+        return fetch('http://localhost:3009/personagem', {
+            method: 'PUT',
+            body: JSON.stringify(personagem),
+            headers: { "Content-Type": "application/json" }
         })
-        console.log(this.state.listaPersonagens)
     }
 }
 

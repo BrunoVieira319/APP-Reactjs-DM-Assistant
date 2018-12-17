@@ -6,6 +6,7 @@ import { Container } from 'reactstrap';
 import Formulario from './Formulario.js';
 import Personagens from './Personagens.js';
 import Detalhes from './Detalhes.js';
+import EditarPersonagem from './EditarPersonagem.js';
 
 class App extends Component {
   render = () => (
@@ -22,6 +23,7 @@ class App extends Component {
           <Route path="/" exact component={Personagens}/>
           <Route path="/add" component={Formulario}/>
           <Route path="/:index/detalhes" component={Detalhes} />
+          <Route path="/:index/editar" component={EditarPersonagem} />
         </Container>
       </div>
     </Router>    

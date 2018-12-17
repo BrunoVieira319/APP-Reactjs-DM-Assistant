@@ -1,10 +1,10 @@
 import React from 'react';
 import { Subscribe } from 'unstated';
 import StateComponent from '../StateComponent';
-import { Row, Col, Button, ListGroup, ListGroupItem, ListGroupItemHeading, Modal, 
+import { Row, Col, Button, ListGroup, ListGroupItem, Modal, 
     ModalBody, ModalHeader, ModalFooter, Input, InputGroup, InputGroupAddon, Popover, PopoverBody} from 'reactstrap';
 import { MdAddCircle } from 'react-icons/md';
-import { FaHatWizard, FaDiceD20, FaTrashAlt } from 'react-icons/fa';
+import { FaHatWizard, FaTrashAlt } from 'react-icons/fa';
 
 class Magias extends React.Component {
     render = () => (
