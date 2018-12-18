@@ -12,9 +12,9 @@ export default class EditarPersonagem extends React.Component {
             { sc => 
                 <Container>
                     <Col sm="12" md={{ size: 6, offset: 3 }} >
-                        <h2>
+                        <h3>
                             Editando {sc.state.listaPersonagens[this.props.match.params.index].nome}
-                        </h2>
+                        </h3>
 
                         <InputGroup>
                             <InputGroupAddon addonType="prepend">Nome:</InputGroupAddon>

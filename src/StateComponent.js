@@ -39,7 +39,7 @@ export default class StateComponent extends Container {
     handleNivelEspaco = (e) => { this.setState({nivelEspaco: e.target.value})}
     handleQuantiaEspacosMagia = (e) => { this.setState({quantiaEspacosMagia: e.target.value})}
     handleNomeMagia = (e) => { this.setState({ nomeMagia: e.target.value })} 
-    handleDescricaoMagia = (e) => { this.setState({ descricaoMagia: e.target.value })}
+    handleDescricaoMagia = (e) => { this.setState({ descricaoMagia: e.target.value})}
 
     toggleModalHabilidade = () => {
         this.setState({

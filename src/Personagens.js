@@ -35,9 +35,9 @@ class Personagens extends React.Component {
         }).then(response => 
             response.json())
         .then( dados => {
-            this.props.container.setState({listaPersonagens: dados})
+            this.props.container.setState({listaPersonagens: dados});
             this.setState({dados: dados});
-        })
+        }).then(() => this.props.container.resetarState())
     }
 
     componentDidUpdate = () => {
@@ -87,6 +87,11 @@ class Personagens extends React.Component {
             }
             .card-body {
                 padding: 19px;
+            }
+            h1 {
+                font-family: 'Cantora One';
+                font-weight: bold;
+                font-size: 50px;
             }
         `,
         <Container>

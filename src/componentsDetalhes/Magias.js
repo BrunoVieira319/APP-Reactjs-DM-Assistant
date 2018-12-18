@@ -16,22 +16,22 @@ class Magias extends React.Component {
                             <ListGroupItem 
                                 key={i}
                                 id={`magia${i}`}
-                                style={{padding: "5px 20px"}}
+                                style={{padding: "10px 20px"}}
                             >
                                 <Row>
-                                    <Col sm='10' style={{paddingRight:'0'}} onClick={() => sc.togglePopoverMagia(this.props.index, i)}>
+                                    <Col sm='8' style={{paddingRight:'0'}} onClick={() => sc.togglePopoverMagia(this.props.index, i)}>
                                         <p style={{fontSize: "20px", marginBottom: "0"}}> {magia.nomeMagia} </p>
                                     </Col>
-                                    <Col sm='2'>
+                                    <Col sm='4' style={{display: "flex", justifyContent: "flex-end"}}>
                                         <Button onClick={() => sc.prepararMagia(this.props.index, i)}> <FaHatWizard /> </Button>
                                         <Button color="danger" onClick={() => sc.deletarMagia(this.props.index, i)}> <FaTrashAlt /> </Button>
                                     </Col>
                                     <Popover 
-                                        placement="auto" 
+                                        placement="bottom" 
                                         isOpen={magia.popoverOpen} 
                                         target={`magia${i}`} 
                                         toggle={() => sc.togglePopoverMagia(this.props.index, i)}
-                                    >
+                                    >   
                                         <PopoverBody>{magia.descricaoMagia}</PopoverBody>
                                     </Popover>
                                 </Row>
