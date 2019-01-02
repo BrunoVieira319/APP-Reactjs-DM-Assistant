@@ -4,7 +4,7 @@ import StateComponent from '../StateComponent';
 import { Button, Card, CardBody, CardHeader, CardFooter} from 'reactstrap';
 import { FaDiceD6 } from 'react-icons/fa';
 
-class DadosDeVida extends React.Component {
+export default class DadosDeVida extends React.Component {
 
     montarDados = (quantiaDados, quantiaMax) => {
         let listaDados = [];
@@ -26,16 +26,13 @@ class DadosDeVida extends React.Component {
                         Dados de Vida 
                     </CardHeader>
                     <CardBody>
-                        {this.montarDados(sc.state.listaPersonagens[this.props.index].quantiaDadosVida, sc.state.listaPersonagens[this.props.index].nivel)}
+                        {this.montarDados(sc.state.personagem.dadosDeVida, sc.state.personagem.nivel)}
                     </CardBody>
                     <CardFooter>
-                        <Button size='sm' color="success" onClick={() => sc.usarDadoVida(this.props.index)}> Usar DV </Button>{" "} 
-                        <Button size='sm' color="info" onClick={() => sc.restaurarDadosVida(this.props.index)}> Restaurar </Button> 
+                        <Button size='sm' color="success" onClick={() => sc.usarDadoVida(sc.state.personagem.id)}> Usar DV </Button>
                     </CardFooter>
                 </Card>
             )}
         </Subscribe>
     )
 }
-
-export default DadosDeVida;

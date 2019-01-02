@@ -1,68 +1,90 @@
 import React from 'react';
-import { Subscribe } from 'unstated';
-import StateComponent from '../StateComponent';
-import { Row, Col, Button, ListGroup, ListGroupItem, Modal, 
-    ModalBody, ModalHeader, ModalFooter, Input, InputGroup, InputGroupAddon, Popover, PopoverBody} from 'reactstrap';
+import withSubscribe from '../withSubscribe.js';
+import { Row, Col, Button, ListGroup, ListGroupItem, Modal, ModalBody, ModalHeader, 
+    Input, InputGroup, InputGroupAddon, UncontrolledCollapse, Alert, ListGroupItemHeading, 
+    ListGroupItemText } from 'reactstrap';
 import { MdAddCircle } from 'react-icons/md';
 import { FaHatWizard, FaTrashAlt } from 'react-icons/fa';
+import Style from 'style-it';
+import breakLines from "react-newline-to-break";
+import Escolas from '../enums/Escolas.js';
+import css from '../css/magiasDetalhes.js'
 
 class Magias extends React.Component {
-    render = () => (
-        <Subscribe to={[StateComponent]}>
-            {sc => (
-                <div>
-                    <ListGroup>
-                        {sc.state.listaPersonagens[this.props.index].listaMagias.map((magia, i) => 
-                            <ListGroupItem 
-                                key={i}
-                                id={`magia${i}`}
-                                style={{padding: "10px 20px"}}
-                            >
-                                <Row>
-                                    <Col sm='8' style={{paddingRight:'0'}} onClick={() => sc.togglePopoverMagia(this.props.index, i)}>
-                                        <p style={{fontSize: "20px", marginBottom: "0"}}> {magia.nomeMagia} </p>
-                                    </Col>
-                                    <Col sm='4' style={{display: "flex", justifyContent: "flex-end"}}>
-                                        <Button onClick={() => sc.prepararMagia(this.props.index, i)}> <FaHatWizard /> </Button>
-                                        <Button color="danger" onClick={() => sc.deletarMagia(this.props.index, i)}> <FaTrashAlt /> </Button>
-                                    </Col>
-                                    <Popover 
-                                        placement="bottom" 
-                                        isOpen={magia.popoverOpen} 
-                                        target={`magia${i}`} 
-                                        toggle={() => sc.togglePopoverMagia(this.props.index, i)}
-                                    >   
-                                        <PopoverBody>{magia.descricaoMagia}</PopoverBody>
-                                    </Popover>
-                                </Row>
-                            </ListGroupItem>
-                        )} 
-                        <ListGroupItem tag="button" className="adicionar-magia" onClick={sc.toggleModalMagia}>
-                            <MdAddCircle style={{width: '32px', height: '32px', marginLeft: '6px', color: '#008'}}/> Adicionar Magia
-                        </ListGroupItem>
-                    </ListGroup>
+    render = () => {
+        let cnt = this.props.container;
 
-                    <Modal size='lg' isOpen={sc.state.modalMagia} toggle={sc.toggleModalMagia} >
-                        <ModalHeader>Adicionar Magia</ModalHeader>
-                        <ModalBody>
-                            <InputGroup>
-                                <InputGroupAddon addonType="prepend">Nome da Magia:</InputGroupAddon>
-                                <Input value={sc.state.nomeMagia} onChange={sc.handleNomeMagia}/>
-                            </InputGroup>
-                            <br/>
-                            <InputGroup>
-                                <InputGroupAddon addonType="prepend">Descrição da Magia:</InputGroupAddon>
-                                <Input type="textarea" value={sc.state.descricaoMagia} onChange={sc.handleDescricaoMagia}/>
-                            </InputGroup>
-                        </ModalBody>
-                        <ModalFooter>
-                            <Button color="primary" onClick={() => sc.adicionarMagia(this.props.index)}>Adicionar</Button>
-                        </ModalFooter>
-                    </Modal>
-                </div>
-            )}
-        </Subscribe>
-    )
+        return( Style.it(
+            css(),
+            <div>
+                <ListGroup>
+                    {cnt.state.personagem.magias.map((m, i) => 
+                        <ListGroupItem 
+                            key={i}
+                            className="list-item-magia"
+                        >
+                            <Row>
+                                <Col sm='8' style={{paddingRight:'0'}} id={`descricaoMagia${i}`}>
+                                    <ListGroupItemHeading> 
+                                        {m.magia.nome}
+                                    </ListGroupItemHeading>
+                                    <ListGroupItemText> 
+                                        {m.magia.nivel + "º Nível de " + Object.getOwnPropertyDescriptor(Escolas, m.magia.escola).value}
+                                        {m.magia.ritual ? "(Ritual)" : ""}
+                                    </ListGroupItemText>
+                                </Col>
+
+                                <Col sm='4' className="div-buttons">
+                                    <Button color="primary" onClick={() => cnt.prepararMagia(m.magia.id)} > <FaHatWizard /> </Button>
+                                    <Button color="danger" onClick={() => cnt.deletarMagia(m.magia.id)} > <FaTrashAlt /> </Button>
+                                </Col>
+                            </Row>
+
+                            <UncontrolledCollapse toggler={`#descricaoMagia${i}`}>
+                                <Alert color="info">
+                                    {breakLines(m.magia.descricao)}
+                                </Alert>
+                            </UncontrolledCollapse>
+
+                        </ListGroupItem>
+                    )} 
+
+                    <ListGroupItem tag="button" className="adicionar-magia" onClick={cnt.toggleModalMagia}>
+                        <MdAddCircle className="add-icon"/> Adicionar Magia
+                    </ListGroupItem>
+                </ListGroup>
+
+                <Modal isOpen={cnt.state.modalMagia} toggle={cnt.toggleModalMagia} >
+                    <ModalHeader>Adicionar Magia</ModalHeader>
+
+                    <ModalBody>
+                        <InputGroup>
+                            <InputGroupAddon addonType="prepend">Nome da Magia:</InputGroupAddon>
+                            <Input onChange={cnt.pesquisarMagias}/>
+                        </InputGroup>
+
+                        <ListGroup>
+                            {cnt.state.magiasRetornadas.map((magia , i) => (
+                                <ListGroupItem 
+                                    key={i} 
+                                    onClick={() => cnt.adicionarMagiaParaPersonagem(magia.id)}
+                                    style={{cursor: 'pointer'}}
+                                >
+                                    <ListGroupItemHeading style={{marginBottom: '1px'}}> 
+                                        {magia.nome}
+                                    </ListGroupItemHeading>
+                                    <ListGroupItemText style={{marginBottom: '1px'}}> 
+                                        {magia.nivel + "º Nível de " + magia.escola}
+                                    </ListGroupItemText>
+
+                                </ListGroupItem>
+                            ))}
+                        </ListGroup>
+                    </ModalBody>
+                </Modal>
+            </div>
+        ))
+    }
 }
 
-export default Magias;
+export default withSubscribe(Magias);

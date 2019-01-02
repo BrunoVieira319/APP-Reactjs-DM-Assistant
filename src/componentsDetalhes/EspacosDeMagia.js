@@ -16,7 +16,7 @@ const styleScrollOff = {
     color: '#064650'
 }
 
-class EspacosDeMagia extends React.Component {
+export default class EspacosDeMagia extends React.Component {
     
     montarScrolls = (quantiaEspacos, espacosRestantes) => {
         let listaScrolls = [];
@@ -37,18 +37,18 @@ class EspacosDeMagia extends React.Component {
                 listaEspacos.push(
                     <Row key={i}>
                         <Col xs='9'>
-                            {'Lv '}{espacoDeMagia.nivel}{this.montarScrolls(espacoDeMagia.quantiaEspacos, espacoDeMagia.espacosRestantes)}
+                            {'Nv '}{espacoDeMagia.nivel}{this.montarScrolls(espacoDeMagia.quantidadeMaxima, espacoDeMagia.quantidade)}
                         </Col>
                         <Col xs='3' style={{padding: '0'}}>
                             <Button 
                                 style={{backgroundColor: '#fff', padding: '3px 7px'}}
-                                onClick={() => sc.conjurarMagia(this.props.index, i)}
+                                onClick={() => sc.conjurarMagia(espacoDeMagia.nivel)}
                             >
                                 <FaDiceD20 style={{color: '#b731ff', fontSize: '21px'}}/>
                             </Button>{' '}
                             <Button 
                                 style={{backgroundColor: '#fff', padding: '3px 7px'}}
-                                onClick={() => sc.restaurarUmEspaco(this.props.index, espacoDeMagia.nivel)}
+                                onClick={() => sc.restaurarEspaco(espacoDeMagia.nivel)}
                             >
                                 <FaPlusCircle style={{color: '#0adaff', fontSize: '21px'}}/>
                             </Button>
@@ -60,18 +60,25 @@ class EspacosDeMagia extends React.Component {
         return listaEspacos;
     }
 
+    montarOptionsParaSelectInput = (quantidade) => {
+        let options = []
+        for (let i = 1; i <= quantidade; i++) {
+            options.push(<option key={i} value={i}>{i}</option>)
+        }
+        return options;
+    }
+
     render = () => (
         <Subscribe to={[StateComponent]}>
             {sc => ( 
                 <div> 
-                <Card style={{backgroundColor: '#215a6b', marginTop:'15px', color:'#FFF'}}>
+                <Card style={{backgroundColor: '#256', marginTop:'15px', color:'#FFF'}}>
                     <CardHeader tag='h3'> Espaços de Magia </CardHeader>
                     <CardBody>
-                        {this.montarEspacos(sc.state.listaPersonagens[this.props.index].espacosDeMagia, sc)}
+                        {this.montarEspacos(sc.state.personagem.espacosDeMagia, sc)}
                     </CardBody>
                     <CardFooter>
                         <Button size='sm' color="success" onClick={sc.toggleModalEspacosMagia}>Adicionar Espaços</Button>{" "} 
-                        <Button size='sm' color="info" onClick={() => sc.restaurarEspacos(this.props.index)}> Restaurar </Button> 
                     </CardFooter>
                 </Card>
 
@@ -80,29 +87,20 @@ class EspacosDeMagia extends React.Component {
                     <ModalBody>
                         <InputGroup>
                             <InputGroupAddon addonType="prepend">Nível:</InputGroupAddon>
-                            <Input type="select" value={sc.state.nivelEspaco} onChange={sc.handleNivelEspaco}>
-                                <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                                <option>5</option>
-                                <option>6</option>
-                                <option>7</option>
-                                <option>8</option>
-                                <option>9</option>
+                            <Input type="select" value={sc.state.nivel} onChange={sc.handleNivel}>
+                                <option hidden>Selecione</option>
+                                {this.montarOptionsParaSelectInput(9)}
                             </Input>
 
                             <InputGroupAddon addonType="prepend">Quantidade:</InputGroupAddon>
-                            <Input type="select" value={sc.state.quantiaEspacosMagia} onChange={sc.handleQuantiaEspacosMagia}>
-                                <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
+                            <Input type="select" onChange={sc.handleQuantidadeMaxima}>
+                                <option hidden>Selecione</option>
+                                {this.montarOptionsParaSelectInput(4)}
                             </Input>
                         </InputGroup>
                     </ModalBody>
                     <ModalFooter>
-                        <Button color="primary" onClick={() => sc.adicionarEspacosMagia(this.props.index)}>Adicionar</Button>
+                        <Button color="primary" onClick={sc.adicionarEspacosMagia}>Adicionar</Button>
                     </ModalFooter>
                 </Modal>
                 </div>
@@ -111,4 +109,3 @@ class EspacosDeMagia extends React.Component {
     )
 }
 
-export default EspacosDeMagia;

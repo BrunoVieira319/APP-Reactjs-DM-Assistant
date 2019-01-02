@@ -3,43 +3,49 @@ import { Container } from "unstated";
 export default class StateComponent extends Container {
     state = {
         listaPersonagens: [],
+        magias: [],
+        magiasRetornadas: [],
+        personagem: {},
         nome: "",
         nivel: '',
         vidaMax: '',
         valorVida: '',
         raca: "",
         classe: "",
-        linkImg: "",
-        nomeHabilidade: "",
-        descanso: "Curto",
-        quantiaUsosHabilidade: '',
-        descricaoHabilidade: "",
-        nivelEspaco: 1,
-        quantiaEspacosMagia: 1,
-        nomeMagia: "",
-        descricaoMagia: "",
+        img: "",
+        recuperacao: "",
+        qtdUsosMaximo: '',
+        descricao: "",
+        quantidadeMaxima: 1,
+        ritual: undefined,
+        escola: "",
+        tempoDeConjuracao: "",
+        alcance: "",
+        duracao: "",
+        componentes: "",
         modalMagia: false,
         modalHabilidade: false,
         modalEspacosMagia: false,
         modalRemover: false
     };
 
-    handleNome = (e) => { this.setState({ nome: e.target.value })}
-    handleNivel = (e) => { this.setState({ nivel: e.target.value })}
-    handleVidaMax = (e) => { this.setState({ vidaMax: e.target.value })}
-    handleDadoVida = (e) => { this.setState({ dadoVida: e.target.value })}
-    handleRaca = (e) => { this.setState({ raca: e.target.value })}
-    handleClasse = (e) => { this.setState({ classe: e.target.value })}
-    handleLink = (e) => { this.setState({ linkImg: e.target.value })}
-    handleValorVida = (e) => { this.setState({ valorVida: e.target.value })} 
-    handleNomeHabilidade = (e) => { this.setState({ nomeHabilidade: e.target.value })} 
-    handleDescanso = (e) => { this.setState({ descanso: e.target.value })} 
-    handleQuantiaUsosHabilidade = (e) => { this.setState({ quantiaUsosHabilidade: e.target.value })} 
-    handleDescricaoHabilidade = (e) => { this.setState({ descricaoHabilidade: e.target.value })}
-    handleNivelEspaco = (e) => { this.setState({nivelEspaco: e.target.value})}
-    handleQuantiaEspacosMagia = (e) => { this.setState({quantiaEspacosMagia: e.target.value})}
-    handleNomeMagia = (e) => { this.setState({ nomeMagia: e.target.value })} 
-    handleDescricaoMagia = (e) => { this.setState({ descricaoMagia: e.target.value})}
+    handleNome = (e) => { this.setState({ nome: e.target.value }) }
+    handleNivel = (e) => { this.setState({ nivel: e.target.value }) }
+    handleVidaMax = (e) => { this.setState({ vidaMax: e.target.value }) }
+    handleRaca = (e) => { this.setState({ raca: e.target.value }) }
+    handleClasse = (e) => { this.setState({ classe: e.target.value }) }
+    handleImg = (e) => { this.setState({ img: e.target.value }) }
+    handleValorVida = (e) => { this.setState({ valorVida: e.target.value }) } 
+    handleRecuperacao = (e) => { this.setState({ recuperacao: e.target.value }) } 
+    handleQtdUsosMaximo = (e) => { this.setState({ qtdUsosMaximo: e.target.value }) } 
+    handleDescricao = (e) => { this.setState({ descricao: e.target.value }) }
+    handleQuantidadeMaxima = (e) => { this.setState({quantidadeMaxima: e.target.value}) }
+    handleEscola = (e) => { this.setState({ escola: e.target.value }).then(() => console.log(this.state.escola))}
+    handleRitual = (e) => { this.setState({ ritual: e.target.value }) }
+    handleTempoDeConjuracao = (e) => { this.setState({ tempoDeConjuracao: e.target.value}) }
+    handleAlcance = (e) => { this.setState({ alcance: e.target.value }) }
+    handleDuracao = (e) => { this.setState({ duracao: e.target.value }) }
+    handleComponentes = (e) => { this.setState({ componentes: e.target.value }) }
 
     toggleModalHabilidade = () => {
         this.setState({
@@ -65,46 +71,25 @@ export default class StateComponent extends Container {
         })
     }
 
-    togglePopoverHabilidade = (indexPersonagem, indexHabilidade) => {
-        let lista = this.state.listaPersonagens;
-        let descricaoHabilidade = lista[indexPersonagem].listaHabilidades[indexHabilidade].descricaoHabilidade;
-        if (descricaoHabilidade !== "") {
-            let popover = lista[indexPersonagem].listaHabilidades[indexHabilidade].popoverOpen;
-            lista[indexPersonagem].listaHabilidades[indexHabilidade].popoverOpen = !popover;
-            this.setState({
-                listaPersonagens: lista
-            })
-        }
-    }
-
-    togglePopoverMagia = (indexPersonagem, indexMagia) => {
-        let lista = this.state.listaPersonagens;
-        if (lista[indexPersonagem].listaMagias[indexMagia].descricaoMagia !== "") {
-            let popover = lista[indexPersonagem].listaMagias[indexMagia].popoverOpen;
-            lista[indexPersonagem].listaMagias[indexMagia].popoverOpen = !popover;
-            this.setState({
-                listaPersonagens: lista
-            })
-        }
-    }
-
     resetarState = () => {
         this.setState({
             nome: "",
             nivel: '',
             vidaMax: '',
-            valorVida: "",
+            valorVida: '',
             raca: "",
             classe: "",
-            linkImg: "",
-            nomeHabilidade: "",
-            descanso: "Curto",
-            quantiaUsosHabilidade: '',
-            descricaoHabilidade: "",
-            nivelEspaco: 1,
-            quantiaEspacosMagia: 1,
-            nomeMagia: "",
-            descricaoMagia: ""
+            img: "",
+            recuperacao: "",
+            qtdUsosMaximo: '',
+            descricao: "",
+            quantidadeMaxima: 1,
+            ritual: undefined,
+            escola: "",
+            tempoDeConjuracao: "",
+            alcance: "",
+            duracao: "",
+            componentes: ""
         })
     }
 
@@ -126,80 +111,79 @@ export default class StateComponent extends Container {
         vidaAtualizada = Math.min(vidaAtualizada, lista[indexPersonagem].vidaMax)
 
         lista[indexPersonagem].vidaAtual = vidaAtualizada;
+        let id = lista[indexPersonagem].id;
 
-        this.atualizarPersonagem(lista[indexPersonagem]).then(() => {
+        fetch(`http://localhost:3009/personagem/${id}/vida/${vidaAtualizada}`, {
+            method: "PUT"
+        }).then(
             this.setState({
                 listaPersonagens: lista,
                 valorVida: ""
             })
-        })
+        )
     }
 
-    iniciarUpdate = (indexPersonagem) => {
-        let personagem = this.state.listaPersonagens[indexPersonagem]
-        this.setState({
-            nome: personagem.nome,
-            nivel: personagem.nivel,
-            vidaMax: personagem.vidaMax,
-            linkImg: personagem.linkImg
-        })
-    }
+    pesquisarMagias = (e) => {
+        let nomeMagia = e.target.value;
 
-    editarPersonagem = (i) => {
-        let lista = this.state.listaPersonagens;
-        lista[i].nome = this.state.nome;
-        lista[i].vidaMax = this.state.vidaMax;
-        lista[i].nivel = this.state.nivel;
-        lista[i].linkImg = this.state.linkImg;
-
-        this.atualizarPersonagem(lista[i]).then(() => {
-            this.setState({
-                listaPersonagens: lista,
-                nome: "",
-                nivel: '',
-                vidaMax: '',
-                linkImg: ""
-            })
-        })
-    }
-
-    usarDadoVida = (indexPersonagem) => {
-        let lista = this.state.listaPersonagens;
-        let quantiaDadosVida = lista[indexPersonagem].quantiaDadosVida;
-        if (quantiaDadosVida > 0) {
-            lista[indexPersonagem].quantiaDadosVida -= 1;
-            this.atualizarPersonagem(lista[indexPersonagem]).then(() => {
+        if (nomeMagia.length > 1) {
+            fetch(`http://localhost:3009/magia/nome=${nomeMagia}`, {
+                method: 'GET',
+                
+            }).then( response => response.json()
+            ).then( dados => 
                 this.setState({
-                    listaPersonagens: lista
+                    nome: nomeMagia,
+                    magiasRetornadas: dados
                 })
+            )
+        }
+    }
+
+    usarHabilidade = (idHabilidade) => {
+        let personagem = this.state.personagem;
+        let habilidade = personagem.habilidades.find(hp => hp.habilidade.id === idHabilidade);
+
+        if (habilidade.qtdUsosRestantes > 0) {
+            fetch(`http://localhost:3009/personagem/${personagem.id}/habilidade/${idHabilidade}/usar`, {
+                method: 'PUT'
+            }).then(response => {
+                if (response.status === 200) {
+
+                    personagem.habilidades.forEach(hp => {
+                        if (hp.id === habilidade.id) {
+                            hp.qtdUsosRestantes -= 1;
+                        }
+                    })
+
+                    this.setState({
+                        personagem: personagem
+                    })
+                }
             })
         }
     }
 
-    usarHabilidade = (indexPersonagem, indexHabilidade) => {
-        let lista = this.state.listaPersonagens;
-        let usosRestantes = lista[indexPersonagem].listaHabilidades[indexHabilidade].usosRestantes;
-        
-        if (usosRestantes > 0) {
-            lista[indexPersonagem].listaHabilidades[indexHabilidade].usosRestantes -= 1;
-            this.atualizarPersonagem(lista[indexPersonagem]).then(() => {
-                this.setState({
-                listaPersonagens: lista
-                })
-            })
-        }
-    }
+    conjurarMagia = (nivel) => {
+        let personagem = this.state.personagem;
+        let espacoDeMagia = personagem.espacosDeMagia.find(e => e.nivel === nivel);
 
-    conjurarMagia = (indexPersonagem, indexEspaco) => {
-        let lista = this.state.listaPersonagens;
-        let espacosRestantes = lista[indexPersonagem].espacosDeMagia[indexEspaco].espacosRestantes;
-        if (espacosRestantes > 0) {
-            lista[indexPersonagem].espacosDeMagia[indexEspaco].espacosRestantes -= 1;
+        if (espacoDeMagia.quantidade > 0) {
+            fetch(`http://localhost:3009/personagem/${personagem.id}/espacoDeMagia/${nivel}/usar`,{
+                method: 'PUT'
+            }).then(response => {
+                if (response.status === 200) {
 
-            this.atualizarPersonagem(lista[indexPersonagem]).then(() => {
-                this.setState({
-                listaPersonagens: lista
-                })
+                    personagem.espacosDeMagia.forEach(e => {
+                        if (e.nivel === nivel) {
+                            e.quantidade -= 1;
+                        }
+                    })
+                    
+                    this.setState({
+                        personagem: personagem
+                    })
+                }
             })
         }
     }
@@ -215,165 +199,183 @@ export default class StateComponent extends Container {
         })
     }
 
-    restaurarUsos = (indexPersonagem, indexHabilidade) => {
-        let lista = this.state.listaPersonagens;
-        let habilidade = lista[indexPersonagem].listaHabilidades[indexHabilidade];
-        habilidade.usosRestantes = habilidade.quantiaUsosHabilidade;
-        lista[indexPersonagem].listaHabilidades[indexHabilidade] = habilidade;
+    restaurarUsos = (idHabilidade) => {
+        let personagem = this.state.personagem;
+        let habilidade = personagem.habilidades.find(hp => hp.habilidade.id === idHabilidade);
 
-        this.atualizarPersonagem(lista[indexPersonagem]).then(() => {
-            this.setState({
-            listaPersonagens: lista
-            })
-        })
-    }
+        if (habilidade.qtdUsosRestantes < habilidade.qtdUsosMaximo) {
+            fetch(`http://localhost:3009/personagem/${personagem.id}/habilidade/${idHabilidade}/restaurar`, {
+                method: 'PUT'
+            }).then(response => {
+                if (response.status === 200) {
 
-    restaurarDadosVida = (indexPersonagem) => {
-        let lista = this.state.listaPersonagens;
-        lista[indexPersonagem].quantiaDadosVida = lista[indexPersonagem].nivel;
-
-        this.atualizarPersonagem(lista[indexPersonagem]).then(() => {
-            this.setState({
-                listaPersonagens: lista,
-            })
-        })
-    }
-
-    restaurarUmEspaco = (indexPersonagem, nivelEspaco) => {
-        let lista = this.state.listaPersonagens;
-        lista[indexPersonagem].espacosDeMagia.forEach(espaco => {
-            if (espaco.nivel === nivelEspaco && espaco.espacosRestantes < espaco.quantiaEspacos) {
-                espaco.espacosRestantes += 1;
-
-                this.atualizarPersonagem(lista[indexPersonagem]).then(() => {
-                    this.setState({
-                        listaPersonagens: lista,
+                    personagem.habilidades.forEach(hp => {
+                        if (hp.id === habilidade.id) {
+                            hp.qtdUsosRestantes = hp.qtdUsosMaximo;
+                        }
                     })
-                })
-            }
-        })
+
+                    this.setState({
+                        personagem: personagem
+                    })
+                }
+            })
+        }
     }
 
-    restaurarEspacos = (indexPersonagem) => {
-        let lista = this.state.listaPersonagens;
-        lista[indexPersonagem].espacosDeMagia.forEach(espaco => {
-            espaco.espacosRestantes = espaco.quantiaEspacos;
-        })
+    restaurarEspaco = (nivel) => {
+        let personagem = this.state.personagem;
+        let espacoDeMagia = personagem.espacosDeMagia.find(e => e.nivel === nivel);
 
-        this.atualizarPersonagem(lista[indexPersonagem]).then(() => {
-            this.setState({
-                listaPersonagens: lista,
+        if (espacoDeMagia.quantidade < espacoDeMagia.quantidadeMaxima) {
+            fetch(`http://localhost:3009/personagem/${personagem.id}/espacoDeMagia/${nivel}/restaurar`, {
+                method: 'PUT'
+            }).then(response => {
+                if (response.status === 200) {
+
+                    personagem.espacosDeMagia.forEach(e => {
+                        if (e.nivel === nivel) {
+                            e.quantidade += 1;
+                        }
+                    })
+
+                    this.setState({
+                        personagem: personagem
+                    })
+                }
             })
-        })
+        }
     }
 
     removerPersonagem = (indexPersonagem) => {
-        let personagem = this.state.listaPersonagens[indexPersonagem]
-        fetch('http://localhost:3009/personagem', {
-            method: "DELETE",
-            body: JSON.stringify(personagem),
-            headers: { "Content-Type": "application/json" }
+
+    }
+
+    deletarHabilidade = (idHabilidade) => {
+        let personagem = this.state.personagem;
+
+        fetch(`http://localhost:3009/personagem/${this.state.personagem.id}/habilidade/${idHabilidade}`, {
+            method: 'DELETE'
         }).then(response => {
             if (response.status === 200) {
-                this.toggleModalRemover();
+                let habilidadesAtualizada = personagem.habilidades.filter(hp => hp.habilidade.id !== idHabilidade);
+                personagem.habilidades = habilidadesAtualizada;
+
+                this.setState({
+                    personagem: personagem
+                })
+            }
+        })    
+    }
+
+    deletarMagia = (indexPersonagem, indexMagia) => {
+
+    }
+
+    adicionarMagiaParaPersonagem = (idMagia) => {
+        fetch(`http://localhost:3009/personagem/${this.state.personagem.id}/magia/${idMagia}`, {
+            method: 'POST'
+        }).then( response => {
+            if (response.status === 200) {
+                this.atualizarPersonagem();
             }
         })
     }
 
-    deletarHabilidade = (indexPersonagem, indexHabilidade) => {
-        let lista = this.state.listaPersonagens;
-        let listaHabilidadesAtualizada = lista[indexPersonagem].listaHabilidades.filter((habilidade, i) => i !== indexHabilidade);
-        lista[indexPersonagem].listaHabilidades = listaHabilidadesAtualizada;
+    usarDadoVida = (id) => {
+        let personagem = this.state.personagem;
 
-        this.atualizarPersonagem(lista[indexPersonagem]).then(() => {
-            this.setState({
-                listaPersonagens: lista,
+        if (personagem.dadosDeVida > 0) {
+            fetch(`http://localhost:3009/personagem/${id}/dadoDeVida`, {
+                method: 'PUT'
+            }).then(response => {
+                if (response.status === 200) {
+                    personagem.dadosDeVida -= 1;
+                    this.setState({
+                        personagem: personagem
+                    })
+                }
             })
-        })
-    }
-
-    deletarMagia = (indexPersonagem, indexMagia) => {
-        let lista = this.state.listaPersonagens;
-        let listaMagiasAtualizada = lista[indexPersonagem].listaMagias.filter((magia, i) => i !== indexMagia);
-        lista[indexPersonagem].listaMagias = listaMagiasAtualizada;
-
-        this.atualizarPersonagem(lista[indexPersonagem]).then(() => {
-            this.setState({
-                listaPersonagens: lista,
-            })
-        })
+        }
     }
     
-    adicionarHabilidade = (indexPersonagem) => {
+    adicionarHabilidade = () => {
         let habilidade = {
-            nomeHabilidade: this.state.nomeHabilidade,
-            quantiaUsosHabilidade: this.state.quantiaUsosHabilidade,
-            usosRestantes: this.state.quantiaUsosHabilidade,
-            descanso: this.state.descanso,
-            descricaoHabilidade: this.state.descricaoHabilidade,
-            popoverOpen: false
+            nome: this.state.nome,
+            qtdUsosMaximo: this.state.qtdUsosMaximo,
+            recuperacao: this.state.recuperacao,
+            descricao: this.state.descricao
         }
 
-        let lista = this.state.listaPersonagens;
-        lista[indexPersonagem].listaHabilidades.push(habilidade);
-
-        this.atualizarPersonagem(lista[indexPersonagem]).then(() => {
-            this.setState({
-                listaPersonagens: lista,
-                modalHabilidade: false,
-                nomeHabilidade: "",
-                descanso: "Curto",
-                quantiaUsosHabilidade: '',
-                descricaoHabilidade: ""
-            })
+        fetch(`http://localhost:3009/personagem/${this.state.personagem.id}/habilidade`, {
+            method: 'POST',
+            body: JSON.stringify(habilidade),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(response => {
+            if (response.status === 200) {
+                this.atualizarPersonagem();
+            }
         })
     }
 
     adicionarMagia = (indexPersonagem) => {
         let magia = {
-            nomeMagia: this.state.nomeMagia,
-            descricaoMagia: this.state.descricaoMagia,
-            preparada: false,
-            popoverOpen: false
+            nome: this.state.nome,
+            nivel: this.state.nivel,
+            ritual: this.state.ritual,
+            escola: this.state.escola,
+            tempoDeConjuracao: this.state.tempoDeConjuracao,
+            alcance: this.state.alcance,
+            duracao: this.state.duracao,
+            componentes: this.state.componentes,
+            descricao: this.state.descricao
         }
 
-        let lista = this.state.listaPersonagens;
-        lista[indexPersonagem].listaMagias.push(magia);
-
-        this.atualizarPersonagem(lista[indexPersonagem]).then(() => {
-            this.setState({
-                listaPersonagens: lista,
-                nomeMagia: "",
-                descricaoMagia: "",
-                modalMagia: false
-            })
+        fetch(`http://localhost:3009/magia`, {
+            method: 'POST',
+            body: JSON.stringify(magia),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(response => {
+            if (response.status === 200) {
+                alert("Magia Adicionada com Sucesso");
+                this.resetarState();
+            }  else {
+                alert(response.text);
+            }
         })
     }
 
-    adicionarEspacosMagia = (indexPersonagem) => {
-        let lista = this.state.listaPersonagens;
-        let listaEspacos = lista[indexPersonagem].espacosDeMagia;
+    adicionarEspacosMagia = () => {
         let espacoDeMagia = {
-            nivel: this.state.nivelEspaco,
-            quantiaEspacos: this.state.quantiaEspacosMagia,
-            espacosRestantes: this.state.quantiaEspacosMagia
+            nivel: this.state.nivel,
+            quantidadeMaxima: this.state.quantidadeMaxima,
         }
 
-        if (listaEspacos.some(espaco => espaco.nivel === espacoDeMagia.nivel)) {
-            listaEspacos = listaEspacos.filter(espaco => espaco.nivel !== espacoDeMagia.nivel)
-        }
-
-        listaEspacos.push(espacoDeMagia);
-        listaEspacos.sort((a, b) => a.nivel - b.nivel);
-        lista[indexPersonagem].espacosDeMagia = listaEspacos;
-
-        this.atualizarPersonagem(lista[indexPersonagem]).then(() => {
-            this.setState({
-                listaPersonagens: lista,
-                modalEspacosMagia: false,
-                nivelEspaco: 1,
-                quantiaEspacosMagia: 1
-            })
+        fetch(`http://localhost:3009/personagem/${this.state.personagem.id}/espacoDeMagia`, {
+            method: 'POST',
+            body: JSON.stringify(espacoDeMagia),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(response => {
+            if (response.status === 200) {
+                fetch(`http://localhost:3009/personagem/${this.state.personagem.id}/detalhes`, {
+                    method: 'GET'
+                }).then( response => 
+                    response.json()
+                ).then( dados => {
+                    this.setState({
+                        personagem: dados,
+                        modalEspacosMagia: false,
+                        nivel: '',
+                        quantidadeMaxima: '',
+                    });
+                })
+            }
         })
     }
 
@@ -382,15 +384,9 @@ export default class StateComponent extends Container {
             nome: this.state.nome,
             nivel: this.state.nivel,
             vidaMax: this.state.vidaMax,
-            vidaAtual: this.state.vidaMax,
-            pvsTemporarios: 0,
             raca: this.state.raca,
             classe: this.state.classe,
-            quantiaDadosVida: this.state.nivel,
-            linkImg: this.state.linkImg,
-            listaHabilidades: [],
-            listaMagias: [],
-            espacosDeMagia: [],
+            img: this.state.img,
         };
 
         fetch('http://localhost:3009/personagem', {
@@ -398,29 +394,30 @@ export default class StateComponent extends Container {
             body: JSON.stringify(char),
             headers: { "Content-Type": "application/json" }
         }).then((response) => {
-            if(response.status === 200) {
-                let lista = this.state.listaPersonagens;
-                lista.push(char);
-        
-                this.setState({
-                    listaPersonagens: lista,
-                    nome: "",
-                    nivel: '',
-                    vidaMax: '',
-                    raca: "",
-                    classe: "",
-                    dadoVida: "",
-                    linkImg: ""
-                })
+            if (response.status === 200) {    
+                this.resetarState();
+                alert('Personagem adicionado');
+            } else {
+                alert("Falha ao adicionar personagem");
             }
         })
     }
 
-    atualizarPersonagem = (personagem) => {
-        return fetch('http://localhost:3009/personagem', {
-            method: 'PUT',
-            body: JSON.stringify(personagem),
-            headers: { "Content-Type": "application/json" }
+    atualizarPersonagem = () => {
+        fetch(`http://localhost:3009/personagem/${this.state.personagem.id}/detalhes`, {
+            method: 'GET'
+        }).then( response => 
+            response.json()
+        ).then( dados => {
+            this.setState({
+                personagem: dados,
+                modalHabilidade: false,
+                modalMagia: false,
+                nome: "",
+                recuperacao: "",
+                qtdUsosMaximo: '',
+                descricao: ""
+            });
         })
     }
 }
