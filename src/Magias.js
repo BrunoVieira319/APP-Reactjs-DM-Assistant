@@ -55,7 +55,7 @@ class Magia extends React.Component {
                             <Card key={i}>
                                 <CardHeader>
                                     <h3>{magia.nome}</h3>
-                                    <span>{magia.nivel}º Nível de {Object.getOwnPropertyDescriptor(Escolas, magia.escola).value} {magia.ritual ? "(Ritual)" : ""}</span>
+                                    <span>{magia.nivel}º Nível de {Object.getOwnPropertyDescriptor(Escolas, magia.escola).value} {magia.ritual && "(Ritual)"}</span>
                                 </CardHeader>
                                 <CardBody>
                                     <b>Tempo de Conjuração:</b> {magia.tempoDeConjuracao}<br/>

@@ -1,7 +1,15 @@
 export default () => (`
 
+.list-group {
+    margin-top: 15px;
+}
+
 .list-group-item-heading, .list-group-item-text {
     margin-bottom: 1px;
+}
+
+.list-group-item-heading {
+    font-weight: bold;
 }
 
 .div-buttons {
@@ -19,6 +27,10 @@ export default () => (`
 .list-item-magia {
     padding-top: 7px;
     padding-bottom: 7px;
+}
+
+.alert {
+    margin: 5px 0px;
 }
 
 .adicionar-magia {

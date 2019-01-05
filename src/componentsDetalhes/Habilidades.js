@@ -8,11 +8,7 @@ import breakLines from 'react-newline-to-break';
 import ModalAddHabilidade from './ModalAddHabilidade.js';
 import Recuperacao from '../enums/Recuperacao';
 import withSubscribe from '../withSubscribe';
-
-const styleIcons = {
-    width: '17px', 
-    height: '17px'
-}
+import css from '../css/Habilidades'
 
 class Habilidades extends React.Component {
 
@@ -33,88 +29,37 @@ class Habilidades extends React.Component {
     }
 
     render = () => { 
-        let cnt = this.props.container;
+        const cnt = this.props.container;
 
-        return Style.it(`
-            .list-group-item-heading, .list-group-item-text {
-                margin-bottom: 1px;
-            }
-
-            .list-group-item {
-                padding-top: 7px;
-                padding-bottom: 7px;
-            }
-
-            .col-nome-habilidade {
-                padding-right: 0;
-            }
-
-            .adicionar-habilidade:hover {
-                background-color: #d0ffd0;
-                transition: 0.6s;
-            }
-            
-            .adicionar-habilidade {
-                background-color: #EEE;
-                transition: 0.6s;
-                cursor: pointer;
-                padding-top: 11px;
-                padding-bottom: 11px;
-            }
-
-            .div-shields {
-                margin: auto auto;
-                font-size: 34px;
-            }
-
-            .div-buttons {
-                display: flex;
-                justify-content: flex-end;
-                padding-top: 8px;
-                padding-bottom: 8px;
-            }
-        
-            .div-buttons button {
-                margin-left: 5px;
-                font-size: 18px;
-            }
-
-            .add-icon {
-                color: #080;
-                width: 32px;
-                height: 32px;
-            }
-            `,
-
+        return Style.it(css(),
             <ListGroup>
                 {cnt.state.personagem.habilidades.map((h, i) => 
                     <ListGroupItem key={i} >
                         <Row>
-                            <Col sm='4' className="col-nome-habilidade" id={`descricao${i}`}>
-                                <ListGroupItemHeading > 
-                                    {h.habilidade.nome} 
+                            <Col xs='8' sm='4' className="col-nome-habilidade" id={`descricao${i}`}>
+                                <ListGroupItemHeading>
+                                    {h.habilidade.nome}
                                 </ListGroupItemHeading>
                                 <ListGroupItemText > 
                                     {' Recuperação: '}{Object.getOwnPropertyDescriptor(Recuperacao, h.recuperacao).value} 
                                 </ListGroupItemText>
                             </Col>
 
-                            <Col sm='5' className="div-shields">
+                            <Col xs='4' sm='5' className="div-shields">
                                 {this.montarShields(h.qtdUsosRestantes, h.qtdUsosMaximo)}
-                            </Col>
+                            </Col>                            
 
-                            <Col sm='3' className="div-buttons">
+                            <Col xs='12' sm='3' className="div-buttons">
                                 <Button color="success" onClick={() => cnt.usarHabilidade(h.habilidade.id)}> 
-                                    <FaDiceD20 style={styleIcons}/> 
+                                    <FaDiceD20 /> 
                                 </Button>{' '}
                                 <Button color="info" onClick={() => cnt.restaurarUsos(h.habilidade.id)}> 
-                                    <FaUndo style={styleIcons}/> 
+                                    <FaUndo /> 
                                 </Button>{' '}
                                 <Button color="danger" onClick={() => cnt.deletarHabilidade(h.habilidade.id)}> 
-                                    <FaTrashAlt style={styleIcons}/> 
+                                    <FaTrashAlt /> 
                                 </Button>
                             </Col>
-                            
                         </Row>
 
                         <UncontrolledCollapse toggler={`#descricao${i}`}>
@@ -129,8 +74,6 @@ class Habilidades extends React.Component {
                 <ListGroupItem tag="button" className="adicionar-habilidade" onClick={cnt.toggleModalHabilidade}>
                     <MdAddCircle className="add-icon"/> Adicionar Habilidade
                 </ListGroupItem>
-
-                <div style={{height: "20px"}} />
 
                 <ModalAddHabilidade />
 

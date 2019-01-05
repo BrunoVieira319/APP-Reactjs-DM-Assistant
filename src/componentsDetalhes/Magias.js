@@ -1,42 +1,71 @@
 import React from 'react';
 import withSubscribe from '../withSubscribe.js';
-import { Row, Col, Button, ListGroup, ListGroupItem, Modal, ModalBody, ModalHeader, 
-    Input, InputGroup, InputGroupAddon, UncontrolledCollapse, Alert, ListGroupItemHeading, 
-    ListGroupItemText } from 'reactstrap';
+import { Row, Col, Button, ListGroup, ListGroupItem, UncontrolledCollapse, Alert, 
+    ListGroupItemHeading, ListGroupItemText } from 'reactstrap';
 import { MdAddCircle } from 'react-icons/md';
 import { FaHatWizard, FaTrashAlt } from 'react-icons/fa';
 import Style from 'style-it';
 import breakLines from "react-newline-to-break";
 import Escolas from '../enums/Escolas.js';
 import css from '../css/magiasDetalhes.js'
+import ModalAddMagia from './ModalAddMagia.js';
 
 class Magias extends React.Component {
+
     render = () => {
-        let cnt = this.props.container;
+        const cnt = this.props.container;
 
         return( Style.it(
             css(),
             <div>
                 <ListGroup>
-                    {cnt.state.personagem.magias.map((m, i) => 
+                    {cnt.state.personagem.magias.map((m, i) => m.preparada &&
+                        <ListGroupItem key={i} color="info">
+                            <Row>
+                                <Col xs='8' style={{paddingRight:'0'}} id={`descricaoMagiaPreparada${i}`}>
+                                    <ListGroupItemHeading> 
+                                        <b>{m.magia.nome} </b>
+                                    </ListGroupItemHeading>
+                                    <ListGroupItemText> 
+                                        {m.magia.nivel + "º Nível de " + Object.getOwnPropertyDescriptor(Escolas, m.magia.escola).value}
+                                        {m.magia.ritual && "(Ritual)"}
+                                    </ListGroupItemText>
+                                </Col>
+
+                                <Col xs='4' className="div-buttons">
+                                    <Button color="dark" onClick={() => cnt.desprepararMagia(m.magia.id)} > <FaHatWizard /> </Button>
+                                </Col>
+                            </Row>
+
+                            <UncontrolledCollapse toggler={`#descricaoMagiaPreparada${i}`}>
+                                <Alert color="dark">
+                                    {breakLines(m.magia.descricao)}
+                                </Alert>
+                            </UncontrolledCollapse>
+                        </ListGroupItem>
+                    )}
+                </ListGroup>
+
+                <ListGroup>
+                    {cnt.state.personagem.magias.map((m, i) => !m.preparada &&
                         <ListGroupItem 
                             key={i}
                             className="list-item-magia"
                         >
                             <Row>
-                                <Col sm='8' style={{paddingRight:'0'}} id={`descricaoMagia${i}`}>
+                                <Col xs='8' style={{paddingRight:'0'}} id={`descricaoMagia${i}`}>
                                     <ListGroupItemHeading> 
                                         {m.magia.nome}
                                     </ListGroupItemHeading>
                                     <ListGroupItemText> 
                                         {m.magia.nivel + "º Nível de " + Object.getOwnPropertyDescriptor(Escolas, m.magia.escola).value}
-                                        {m.magia.ritual ? "(Ritual)" : ""}
+                                        {m.magia.ritual && "(Ritual)"}
                                     </ListGroupItemText>
                                 </Col>
 
-                                <Col sm='4' className="div-buttons">
+                                <Col xs='4' className="div-buttons">
                                     <Button color="primary" onClick={() => cnt.prepararMagia(m.magia.id)} > <FaHatWizard /> </Button>
-                                    <Button color="danger" onClick={() => cnt.deletarMagia(m.magia.id)} > <FaTrashAlt /> </Button>
+                                    <Button color="danger" onClick={() => cnt.removerMagia(m.magia.id)} > <FaTrashAlt /> </Button>
                                 </Col>
                             </Row>
 
@@ -54,34 +83,8 @@ class Magias extends React.Component {
                     </ListGroupItem>
                 </ListGroup>
 
-                <Modal isOpen={cnt.state.modalMagia} toggle={cnt.toggleModalMagia} >
-                    <ModalHeader>Adicionar Magia</ModalHeader>
-
-                    <ModalBody>
-                        <InputGroup>
-                            <InputGroupAddon addonType="prepend">Nome da Magia:</InputGroupAddon>
-                            <Input onChange={cnt.pesquisarMagias}/>
-                        </InputGroup>
-
-                        <ListGroup>
-                            {cnt.state.magiasRetornadas.map((magia , i) => (
-                                <ListGroupItem 
-                                    key={i} 
-                                    onClick={() => cnt.adicionarMagiaParaPersonagem(magia.id)}
-                                    style={{cursor: 'pointer'}}
-                                >
-                                    <ListGroupItemHeading style={{marginBottom: '1px'}}> 
-                                        {magia.nome}
-                                    </ListGroupItemHeading>
-                                    <ListGroupItemText style={{marginBottom: '1px'}}> 
-                                        {magia.nivel + "º Nível de " + magia.escola}
-                                    </ListGroupItemText>
-
-                                </ListGroupItem>
-                            ))}
-                        </ListGroup>
-                    </ModalBody>
-                </Modal>
+                <ModalAddMagia />
+                
             </div>
         ))
     }

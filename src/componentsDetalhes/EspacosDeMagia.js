@@ -1,56 +1,40 @@
 import React from 'react';
-import { Subscribe } from 'unstated';
-import StateComponent from '../StateComponent';
-import { Row, Col, Button, Card, CardBody, CardHeader, CardFooter, Modal, ModalBody, ModalHeader, ModalFooter, Input, InputGroup, InputGroupAddon} from 'reactstrap';
-import { FaScroll, FaDiceD20, FaPlusCircle } from 'react-icons/fa';
+import { Row, Col, Button, Card, CardBody, CardHeader, CardFooter, Modal, ModalBody, 
+    ModalHeader, ModalFooter, Input, InputGroup, InputGroupAddon} from 'reactstrap';
+import Style from "style-it";
+import css from "../css/EspacosDeMagia";
+import { FaScroll, FaDiceD20, FaUndo } from 'react-icons/fa';
+import withSubscribe from '../withSubscribe';
 
-const styleScrollOn = {
-    fontSize: '34px', 
-    marginLeft: '6px',
-    color: '#59ecfa'
-}
-
-const styleScrollOff = {
-    fontSize: '34px', 
-    marginLeft: '6px',
-    color: '#064650'
-}
-
-export default class EspacosDeMagia extends React.Component {
+class EspacosDeMagia extends React.Component {
     
     montarScrolls = (quantiaEspacos, espacosRestantes) => {
-        let listaScrolls = [];
+        let scrolls = [];
         for(let i = 0; i < quantiaEspacos; i++) {
             if (espacosRestantes > i) {
-                listaScrolls.push(<FaScroll key={i} style={styleScrollOn}/>)
+                scrolls.push(<FaScroll key={i} size={34} color='#59ecfa'/>)
             } else {
-                listaScrolls.push(<FaScroll key={i} style={styleScrollOff}/>)
+                scrolls.push(<FaScroll key={i} size={34} color='#28588a'/>)
             }
         }
-        return listaScrolls;
+        return scrolls;
     }
 
-    montarEspacos = (espacosDeMagia, sc) => {
+    montarEspacos = (espacosDeMagia) => {
         let listaEspacos = [];
         if (espacosDeMagia != null) {
             espacosDeMagia.map((espacoDeMagia, i) => (
                 listaEspacos.push(
                     <Row key={i}>
-                        <Col xs='9'>
+                        <Col xs='8'>
                             {'Nv '}{espacoDeMagia.nivel}{this.montarScrolls(espacoDeMagia.quantidadeMaxima, espacoDeMagia.quantidade)}
                         </Col>
-                        <Col xs='3' style={{padding: '0'}}>
-                            <Button 
-                                style={{backgroundColor: '#fff', padding: '3px 7px'}}
-                                onClick={() => sc.conjurarMagia(espacoDeMagia.nivel)}
-                            >
-                                <FaDiceD20 style={{color: '#b731ff', fontSize: '21px'}}/>
+                        <Col xs='4' className='col-buttons'>
+                            <Button onClick={() => this.props.container.conjurarMagia(espacoDeMagia.nivel)}>
+                                <FaDiceD20 color='#315cff' size={21}/>
                             </Button>{' '}
-                            <Button 
-                                style={{backgroundColor: '#fff', padding: '3px 7px'}}
-                                onClick={() => sc.restaurarEspaco(espacoDeMagia.nivel)}
-                            >
-                                <FaPlusCircle style={{color: '#0adaff', fontSize: '21px'}}/>
+                            <Button onClick={() => this.props.container.restaurarEspaco(espacoDeMagia.nivel)}>
+                                <FaUndo color='#315cff' size={21}/>
                             </Button>
                         </Col>
                     </Row>
@@ -68,44 +52,50 @@ export default class EspacosDeMagia extends React.Component {
         return options;
     }
 
-    render = () => (
-        <Subscribe to={[StateComponent]}>
-            {sc => ( 
-                <div> 
-                <Card style={{backgroundColor: '#256', marginTop:'15px', color:'#FFF'}}>
+    render = () => {
+        const cnt = this.props.container;
+
+        return (Style.it (css(), 
+            <div> 
+                <Card>
                     <CardHeader tag='h3'> Espaços de Magia </CardHeader>
                     <CardBody>
-                        {this.montarEspacos(sc.state.personagem.espacosDeMagia, sc)}
+                        {this.montarEspacos(cnt.state.personagem.espacosDeMagia)}
                     </CardBody>
                     <CardFooter>
-                        <Button size='sm' color="success" onClick={sc.toggleModalEspacosMagia}>Adicionar Espaços</Button>{" "} 
+                        <Button 
+                            size='sm' 
+                            onClick={cnt.toggleModalEspacosMagia}
+                        > 
+                            Adicionar Espaços
+                        </Button>
                     </CardFooter>
                 </Card>
 
-                <Modal isOpen={sc.state.modalEspacosMagia} toggle={sc.toggleModalEspacosMagia}>
+                <Modal isOpen={cnt.state.modalEspacosMagia} toggle={cnt.toggleModalEspacosMagia}>
                     <ModalHeader>Adicionar Espaços de Magia</ModalHeader>
                     <ModalBody>
                         <InputGroup>
                             <InputGroupAddon addonType="prepend">Nível:</InputGroupAddon>
-                            <Input type="select" value={sc.state.nivel} onChange={sc.handleNivel}>
+                            <Input type="select" value={cnt.state.nivel} onChange={cnt.handleNivel}>
                                 <option hidden>Selecione</option>
                                 {this.montarOptionsParaSelectInput(9)}
                             </Input>
 
                             <InputGroupAddon addonType="prepend">Quantidade:</InputGroupAddon>
-                            <Input type="select" onChange={sc.handleQuantidadeMaxima}>
+                            <Input type="select" onChange={cnt.handleQuantidadeMaxima}>
                                 <option hidden>Selecione</option>
                                 {this.montarOptionsParaSelectInput(4)}
                             </Input>
                         </InputGroup>
                     </ModalBody>
                     <ModalFooter>
-                        <Button color="primary" onClick={sc.adicionarEspacosMagia}>Adicionar</Button>
+                        <Button color="primary" onClick={cnt.adicionarEspacosMagia}>Adicionar</Button>
                     </ModalFooter>
                 </Modal>
-                </div>
-            )}
-        </Subscribe>
-    )
+            </div>
+        ))
+    }
 }
 
+export default withSubscribe(EspacosDeMagia);

@@ -3,6 +3,7 @@ import { render } from 'react-dom';
 import { Provider } from 'unstated';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import { Container, Row, Nav } from 'reactstrap';
+import { FaDAndD } from 'react-icons/fa'
 import Style from 'style-it';
 import css from './css/index.js';
 import AddPersonagem from './AddPersonagem.js';
@@ -19,9 +20,10 @@ class App extends Component {
       <div>
         <Router>
           <div>
-
+            
             <Row className={"header"}>
               <Container className={"header-container"}>
+                <FaDAndD size={60} color='white' />
                 <Nav>
                   <Link to="/personagens" className={"link-header"}>
                       Personagens
@@ -46,7 +48,7 @@ class App extends Component {
               <Route path="/add/personagem" component={AddPersonagem}/>
               <Route path="/add/magia" component={AddMagia}/>
               <Route path="/:id/detalhes" component={Detalhes} />
-              <Route path="/:index/editar" component={EditarPersonagem} />
+              <Route path="/:id/editar" component={EditarPersonagem} />
             </Container>
 
           </div>

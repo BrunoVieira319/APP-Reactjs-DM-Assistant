@@ -115,12 +115,33 @@ export default class StateComponent extends Container {
 
         fetch(`http://localhost:3009/personagem/${id}/vida/${vidaAtualizada}`, {
             method: "PUT"
-        }).then(
-            this.setState({
-                listaPersonagens: lista,
-                valorVida: ""
-            })
-        )
+        }).then( response => {
+            if (response.status === 200) {
+                this.setState({
+                    listaPersonagens: lista,
+                    valorVida: ""
+                })
+            }
+        })
+    }
+
+    descansar = (idPersonagem) => {
+        let personagens = this.state.listaPersonagens;
+        let personagem = personagens.find(p => p.id === idPersonagem);
+        let indicePersonagem = personagens.findIndex(p => p.id === idPersonagem);
+
+        fetch(`http://localhost:3009/personagem/${idPersonagem}/descansar`, {
+            method: 'PUT'
+        }).then( response => {
+            if (response.status === 200) {
+                personagem.vidaAtual = personagem.vidaMax;
+                personagens[indicePersonagem] = personagem;
+
+                this.setState({
+                    listaPersonagens: personagens
+                })
+            }
+        })
     }
 
     pesquisarMagias = (e) => {
@@ -137,6 +158,10 @@ export default class StateComponent extends Container {
                     magiasRetornadas: dados
                 })
             )
+        } else {
+            this.setState({
+                magias: []
+            })
         }
     }
 
@@ -173,11 +198,8 @@ export default class StateComponent extends Container {
                 method: 'PUT'
             }).then(response => {
                 if (response.status === 200) {
-
                     personagem.espacosDeMagia.forEach(e => {
-                        if (e.nivel === nivel) {
-                            e.quantidade -= 1;
-                        }
+                        if (e.nivel === nivel) e.quantidade -= 1;
                     })
                     
                     this.setState({
@@ -188,14 +210,43 @@ export default class StateComponent extends Container {
         }
     }
 
-    prepararMagia = (indexPersonagem, indexMagia) => {
-        let magiaParaPreparar = this.state.listaPersonagens[indexPersonagem].listaMagias[indexMagia];
-        magiaParaPreparar.preparada = !magiaParaPreparar.preparada;
-        let lista = this.state.listaPersonagens;
-        lista[indexPersonagem].listaMagias[indexMagia] = magiaParaPreparar;
+    prepararMagia = (idMagia) => {
+        let personagem = this.state.personagem
 
-        this.setState({
-            listaPersonagens: lista
+        fetch(`http://localhost:3009/personagem/${personagem.id}/magia/${idMagia}/preparar`, {
+            method: 'PUT'
+        }).then( response => {
+            if (response.status === 200) {
+                personagem.magias.forEach(m => {
+                    if (m.magia.id === idMagia) m.preparada = true ;
+                })
+
+                this.setState({
+                    personagem: personagem
+                })
+            } else {
+                response.json().then(response => alert(response.message))
+            }
+        })
+    }
+
+    desprepararMagia = (idMagia) => {
+        let personagem = this.state.personagem
+
+        fetch(`http://localhost:3009/personagem/${personagem.id}/magia/${idMagia}/despreparar`, {
+            method: 'PUT'
+        }).then( response => {
+            if (response.status === 200) {
+                personagem.magias.forEach(m => {
+                    if (m.magia.id === idMagia) m.preparada = false ;
+                })
+
+                this.setState({
+                    personagem: personagem
+                })
+            } else {
+                response.json().then(response => alert(response.message))
+            }
         })
     }
 
@@ -247,14 +298,23 @@ export default class StateComponent extends Container {
         }
     }
 
-    removerPersonagem = (indexPersonagem) => {
-
+    removerPersonagem = (id) => {
+        fetch(`http://localhost:3009/personagem/${id}`, {
+            method: 'DELETE'
+        }).then(response => {
+            if (response.status === 200) {
+                alert('Personagem removido')
+                this.setState({
+                    modalRemover: false
+                })
+            }
+        })
     }
 
     deletarHabilidade = (idHabilidade) => {
         let personagem = this.state.personagem;
 
-        fetch(`http://localhost:3009/personagem/${this.state.personagem.id}/habilidade/${idHabilidade}`, {
+        fetch(`http://localhost:3009/personagem/${personagem.id}/habilidade/${idHabilidade}`, {
             method: 'DELETE'
         }).then(response => {
             if (response.status === 200) {
@@ -268,8 +328,47 @@ export default class StateComponent extends Container {
         })    
     }
 
-    deletarMagia = (indexPersonagem, indexMagia) => {
+    removerMagia = (idMagia) => {
+        let personagem = this.state.personagem;
 
+        fetch(`http://localhost:3009/personagem/${personagem.id}/magia/${idMagia}`, {
+            method: 'DELETE'
+        }).then(response => {
+            if (response.status === 200) {
+                let magiasAtualizada = personagem.magias.filter(m => m.magia.id !== idMagia);
+                personagem.magias = magiasAtualizada;
+
+                this.setState({
+                    personagem: personagem
+                })
+            }
+        }) 
+    }
+
+    editarPersonagem = (id) => {
+        if (this.state.nivel === '' && this.state.vidaMax === '' && this.state.img === '') {
+            return alert("Nenhum campo preenchido")
+        }
+
+        let personagem = {
+            id: id,
+            nivel: this.state.nivel,
+            vidaMax: this.state.vidaMax,
+            img: this.state.img
+        }
+
+        fetch(`http://localhost:3009/personagem`, {
+            method: 'PUT',
+            body: JSON.stringify(personagem),
+            headers: { 
+                "Content-Type": "application/json"
+            }
+        }).then( response => {
+            if (response.status === 200) {
+                alert("Personagem editado")
+                this.resetarState();
+            }
+        })
     }
 
     adicionarMagiaParaPersonagem = (idMagia) => {
@@ -344,7 +443,7 @@ export default class StateComponent extends Container {
                 alert("Magia Adicionada com Sucesso");
                 this.resetarState();
             }  else {
-                alert(response.text);
+                response.json().then(response => alert(response.message))
             }
         })
     }
@@ -363,18 +462,7 @@ export default class StateComponent extends Container {
             }
         }).then(response => {
             if (response.status === 200) {
-                fetch(`http://localhost:3009/personagem/${this.state.personagem.id}/detalhes`, {
-                    method: 'GET'
-                }).then( response => 
-                    response.json()
-                ).then( dados => {
-                    this.setState({
-                        personagem: dados,
-                        modalEspacosMagia: false,
-                        nivel: '',
-                        quantidadeMaxima: '',
-                    });
-                })
+                this.atualizarPersonagem();
             }
         })
     }
@@ -413,10 +501,12 @@ export default class StateComponent extends Container {
                 personagem: dados,
                 modalHabilidade: false,
                 modalMagia: false,
+                modalEspacosMagia: false,
                 nome: "",
                 recuperacao: "",
                 qtdUsosMaximo: '',
-                descricao: ""
+                descricao: "",
+                magiasRetornadas: []
             });
         })
     }

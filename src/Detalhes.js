@@ -1,6 +1,7 @@
 import React from 'react';
 import withSubscribe from './withSubscribe.js'
-import { Container, Row, Col } from 'reactstrap';
+import { Container, Row, Col, Card, CardImg, CardHeader } from 'reactstrap';
+import Style from 'style-it';
 import IconLoading from 'react-loading';
 import DadosDeVida from './componentsDetalhes/DadosDeVida.js';
 import Habilidades from './componentsDetalhes/Habilidades.js';
@@ -44,14 +45,37 @@ class Detalhes extends React.Component {
                 </div>
             )
         } 
-        return (
-            <Container>
-                <h2>
-                    {this.props.container.state.personagem.nome}
-                </h2>
+        return (Style.it (`
+                @import url('https://fonts.googleapis.com/css?family=PT+Sans');
 
+                h3 {
+                    font-family: 'Cantora One';
+                }
+
+                .list-group {
+                    font-family: 'PT Sans';
+                }
+
+                .card {
+                    margin-bottom: 15px;
+                }
+
+                .card-img {
+                    height: 250px;
+                    object-fit: cover;
+                    object-position: 50% 15%;
+                }
+            `,
+            <Container>
                 <Row>
                     <Col xs='12' md='4'>
+                        <Card>
+                            <CardHeader tag='h3'>
+                                {this.props.container.state.personagem.nome}
+                            </CardHeader>
+                            <CardImg src={this.props.container.state.personagem.img} />
+                        </Card>
+
                         <DadosDeVida />
                         <EspacosDeMagia />
 
@@ -64,7 +88,7 @@ class Detalhes extends React.Component {
                     </Col>
                 </Row>
             </Container>
-        )
+        ))
     }
 }
 
